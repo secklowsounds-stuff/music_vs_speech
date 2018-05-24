@@ -8,6 +8,6 @@ read USER
 #stty echo
 
 echo "Connecting..."
-mkdir -p data/SecklowSounds
-scp -P 54211 -r $USER@data.mksmart.org:/var/www/html/secklows-tagging/docs data/SecklowSounds
+mkdir -p datasets/SecklowSounds
+scp -P 54211 -r $USER@data.mksmart.org:/var/www/html/secklows-tagging/docs datasets/SecklowSounds
 echo "Download completed"
