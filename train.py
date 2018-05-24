@@ -3,7 +3,7 @@ import plac
 import numpy as np
 from keras import backend as K
 from keras.utils import to_categorical
-from music_tagger_cnn import MusicTaggerCNN
+from music_tagger_cnn import MusicTaggerCNN, SmallCNN, SmallestCNN
 from music_tagger_crnn import MusicTaggerCRNN
 
 import data
@@ -36,8 +36,15 @@ def main(net_type, epochs=10):
 
     if net_type == 'cnn':
         model = MusicTaggerCNN(data.N_FRAMES, data.N_MELS, n_classes)
+    elif net_type == 'small_cnn':
+        model = SmallCNN(data.N_FRAMES, data.N_MELS, n_classes)
+    elif net_type == 'smallest_cnn':
+        model = SmallestCNN(data.N_FRAMES, data.N_MELS, n_classes)
     elif net_type == 'crnn':
         model = MusicTaggerCRNN(data.N_FRAMES, data.N_MELS, n_classes)
+
+    else:
+        raise ValueError(net_type)
 
     model.summary()
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])

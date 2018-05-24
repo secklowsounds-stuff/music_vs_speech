@@ -13,9 +13,8 @@ from __future__ import absolute_import
 from keras import backend as K
 from keras.layers import Input, Dense
 from keras.models import Model
-from keras.layers import Dense, Dropout, Flatten
-from keras.layers.convolutional import Conv2D
-from keras.layers.convolutional import MaxPooling2D, ZeroPadding2D
+from keras.layers import Dense, Dropout, Flatten, Activation
+from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.layers.advanced_activations import ELU
 from keras.utils.data_utils import get_file
@@ -24,6 +23,52 @@ from keras.layers import Input, Dense
 TH_WEIGHTS_PATH = 'https://github.com/keunwoochoi/music-auto_tagging-keras/blob/master/data/music_tagger_cnn_weights_theano.h5'
 TF_WEIGHTS_PATH = 'https://github.com/keunwoochoi/music-auto_tagging-keras/blob/master/data/music_tagger_cnn_weights_tensorflow.h5'
 
+def SmallestCNN(n_frames, n_mels, n_classes):
+    if K.image_dim_ordering() == 'th':
+        input_shape = (1, n_mels, n_frames)
+    else:
+        input_shape = (n_mels, n_frames, 1)
+
+    melgram_input = Input(shape=input_shape)
+    # TODO try getting smaller
+    x = Conv2D(128, (3, 3), padding='same', name='conv1')(melgram_input)
+    x = Activation('relu')(x)
+    x = MaxPooling2D(pool_size=(10, 20), strides=(1, 3))(x)
+    x = Conv2D(128, (3, 3), padding='same', name='conv2')(x)
+    x = Activation('relu')(x)
+    x = Dropout(0.5)(x)
+    x = Flatten()(x)
+    x = Dense(units=n_classes, activation='softmax')(x)
+
+    model = Model(melgram_input, x)
+    return model
+
+def SmallCNN(n_frames, n_mels, n_classes):
+    """ From https://github.com/aidiary/urban-sound-classification-keras/blob/master/scripts/models.py """
+    # Determine proper input shape
+    if K.image_dim_ordering() == 'th':
+        input_shape = (1, n_mels, n_frames)
+    else:
+        input_shape = (n_mels, n_frames, 1)
+
+    melgram_input = Input(shape=input_shape)
+    
+    x = Conv2D(filters=80, kernel_size=(57, 6), strides=(1, 1), padding='valid')(melgram_input)
+    x = Activation('relu')(x)
+    x = MaxPooling2D(pool_size=(4, 3), strides=(1, 3))(x)
+    x = Conv2D(filters=80, kernel_size=(1, 3), strides=(1, 1), padding='valid')(x)
+    x = Activation('relu')(x)
+    x = Dropout(0.5)(x)
+    x = MaxPooling2D(pool_size=(1, 3), strides=(1, 3))(x)
+    x = Flatten()(x)
+    x = Dense(units=5000, activation='relu')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(units=5000, activation='relu')(x)
+    x = Dropout(0.5)(x)
+    x = Dense(units=n_classes, activation='softmax')(x)
+
+    model = Model(melgram_input, x)
+    return model
 
 def MusicTaggerCNN(n_frames, n_mels, n_classes, weights=None, input_tensor=None,
                    include_top=True):
