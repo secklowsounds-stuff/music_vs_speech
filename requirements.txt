@@ -1,1 +1,4 @@
 librosa
+keras
+tensorflow
+plac

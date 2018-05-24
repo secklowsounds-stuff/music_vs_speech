@@ -15,10 +15,7 @@ import operator
 from collections import defaultdict
 from pathlib import Path
 
-DATA_LOCATION = Path('data/SecklowSounds')
-DOCS_LOCATION = DATA_LOCATION / 'docs'
-CHUNKS_LOCATION = DOCS_LOCATION / 'chunks'
-WINNERS_LOCATION = DATA_LOCATION / 'winners.csv'
+import data
 
 MIN_DURATION = 3
 
@@ -67,7 +64,7 @@ def count_based_filter(counts, n_voters):
 def duration_based_filter(counts):
     results = {}
     # a list of all the .mp3 files
-    chunk_files_locations = CHUNKS_LOCATION.glob('*.mp3')
+    chunk_files_locations = data.CHUNKS_LOCATION.glob('*.mp3')
     # select only the ones that match the previous selection
     chunk_files_locations = [chunk_location for chunk_location in chunk_files_locations
                              if any(chunk_location.name == chunk_name for chunk_name in counts.keys())]
@@ -97,10 +94,10 @@ def write_winners(winners, location):
 
 
 def main():
-    counts, n_voters = read_csv_files(DOCS_LOCATION)
+    counts, n_voters = read_csv_files(data.DOCS_LOCATION)
     counts = filter_chunks(counts, n_voters)
     winners = select_winners(counts)
-    write_winners(winners, WINNERS_LOCATION)
+    write_winners(winners, data.GOLD_LOCATION)
 
 
 if __name__ == '__main__':

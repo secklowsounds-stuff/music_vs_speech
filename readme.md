@@ -8,4 +8,13 @@ run `./download.sh`
 
 run `python select_chunks.py`
 
+## Compute melgrams
+
+run `python compute_melgrams.py`
+
+## Train model
+
+set image_dim_ordering == 'th'.You can set it at ~/.keras/keras.json
+run `python train.py`
+
 ## TODO
