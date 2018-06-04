@@ -33,6 +33,7 @@ def compute_melgram(audio_path):
     n_sample = src.shape[0]
     n_sample_fit = int(DURA*SR)
 
+    # TODO remove padding / truncating, real variable length
     if n_sample < n_sample_fit:  # if too short
         src = np.hstack((src, np.zeros((int(DURA*SR) - n_sample,))))
     elif n_sample > n_sample_fit:  # if too long
