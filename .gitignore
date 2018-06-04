@@ -2,6 +2,8 @@
 datasets/**
 # the trained models
 *.h5
+# other vscode
+.vscode/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

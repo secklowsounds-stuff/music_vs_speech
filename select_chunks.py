@@ -29,7 +29,10 @@ def read_csv_files(path):
         n_voters += 1
         with file_path.open('r') as f:
             reader = csv.reader(f, delimiter=',')
-            for row in reader:
+            rows = [(l[0], l[1]) for l in reader]
+            # remove duplicate for same tagger
+            rows = set(rows)
+            for row in rows:
                 chunk_name = row[0]
                 class_name = row[1]
                 counts[chunk_name][class_name] += 1
@@ -63,6 +66,7 @@ def count_based_filter(counts, n_voters):
 
 def duration_based_filter(counts):
     results = {}
+    print('required minimum duration:', MIN_DURATION)
     # a list of all the .mp3 files
     chunk_files_locations = data.CHUNKS_LOCATION.glob('*.mp3')
     # select only the ones that match the previous selection
@@ -75,9 +79,9 @@ def duration_based_filter(counts):
         chunk_name = chunk_location.name
         if duration > MIN_DURATION:
             results[chunk_name] = counts[chunk_name]
-    print('#chunks after duration-based filter:', len(counts.keys()))
+    print('#chunks after duration-based filter:', len(results.keys()))
     
-    return counts
+    return results
 
 
 def select_winners(counts):
