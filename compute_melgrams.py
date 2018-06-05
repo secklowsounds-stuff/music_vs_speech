@@ -2,13 +2,16 @@ import csv
 import pathlib
 import numpy as np
 
+from tqdm import tqdm
+
 import data
 
 
 def main():
     with data.GOLD_LOCATION.open('r') as gold_file:
         reader = csv.reader(gold_file, delimiter=',')
-        for row in reader:
+        row_count = sum(1 for row in open(data.GOLD_LOCATION))
+        for row in tqdm(reader, total=row_count):
             chunk_name = row[0]
             class_name = row[1]
             chunk_location = data.CHUNKS_LOCATION / chunk_name

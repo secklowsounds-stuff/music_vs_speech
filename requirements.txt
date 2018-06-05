@@ -2,3 +2,4 @@ librosa
 keras
 tensorflow
 plac
+tqdm

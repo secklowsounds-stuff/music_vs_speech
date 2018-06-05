@@ -14,6 +14,7 @@ import operator
 
 from collections import defaultdict
 from pathlib import Path
+from tqdm import tqdm
 
 import data
 
@@ -52,28 +53,27 @@ def count_based_filter(counts, n_voters):
     # criterion 1: no 'unknown' votes
     counts = {chunk_name: chunk_counts for (chunk_name, chunk_counts) in counts.items()
               if not chunk_counts['unknown']}
-    print('#chunks after count-based criterion 1:',len(counts.keys()))
+    print('#chunks after count-based criterion 1 (no unknown votes):',len(counts.keys()))
 
     # criterion 2: at least 2/3 of people agree
     required_count = (n_voters * 2) // 3
     print('required_count:', required_count)
     counts = {chunk_name: chunk_counts for chunk_name, chunk_counts in counts.items()
               if any(class_count >= required_count for class_name, class_count in chunk_counts.items())}
-    print('#chunks after count-based criterion 2:',len(counts.keys()))
+    print('#chunks after count-based criterion 2 (at least 2/3 agree):',len(counts.keys()))
 
     return counts
 
 
 def duration_based_filter(counts):
     results = {}
-    print('required minimum duration:', MIN_DURATION)
+    print('required minimum duration (seconds):', MIN_DURATION)
     # a list of all the .mp3 files
     chunk_files_locations = data.CHUNKS_LOCATION.glob('*.mp3')
     # select only the ones that match the previous selection
     chunk_files_locations = [chunk_location for chunk_location in chunk_files_locations
                              if any(chunk_location.name == chunk_name for chunk_name in counts.keys())]
-    for chunk_location in chunk_files_locations:
-        # if does not work, do str(chunk)
+    for chunk_location in tqdm(chunk_files_locations):
         audio, sample_rate = librosa.load(str(chunk_location))
         duration = librosa.get_duration(audio, sample_rate)
         chunk_name = chunk_location.name
