@@ -3,6 +3,8 @@ import plac
 import numpy as np
 from keras import backend as K
 from keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
+
 from music_tagger_cnn import MusicTaggerCNN, SmallCNN, SmallestCNN
 from music_tagger_crnn import MusicTaggerCRNN
 
@@ -49,7 +51,8 @@ def main(net_type, epochs=10):
     model.summary()
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
     # TODO change batch size
-    model.fit(x, y, epochs=epochs, validation_split=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    model.fit(X_train, y_train, epochs=epochs, validation_data=(X_test, y_test))
 
     model.save('music_{}_epochs:{}.h5'.format(net_type, epochs))
 

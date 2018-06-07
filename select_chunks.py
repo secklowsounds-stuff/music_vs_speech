@@ -101,8 +101,11 @@ def main():
     counts, n_voters = read_csv_files(data.DOCS_LOCATION)
     counts = filter_chunks(counts, n_voters)
     winners = select_winners(counts)
+    counts = defaultdict(lambda: 0)
+    for _, label in winners:
+        counts[label] += 1
+    print(*counts.items())
     write_winners(winners, data.GOLD_LOCATION)
-
 
 if __name__ == '__main__':
     main()
